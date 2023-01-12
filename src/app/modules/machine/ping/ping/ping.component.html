@@ -1,0 +1,6 @@
+<div class="flex flex-nowrap">
+    <app-spinner *ngIf="loading"></app-spinner>
+    <div *ngIf="!loading" [ngClass]="colorClass" class="text-xs px-2 py-1 rounded font-semibold">
+        {{ ping }}&nbsp;ms {{ rating }}
+    </div>
+</div>

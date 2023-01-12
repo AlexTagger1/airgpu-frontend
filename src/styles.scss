@@ -1,0 +1,28 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+body {
+    @apply bg-gray-900 text-gray-400;
+}
+
+a:hover {
+    @apply text-white;
+}
+
+h1 {
+    @apply text-2xl mb-10;
+}
+
+h2 {
+    @apply text-xl mb-10;
+}
+
+a {
+    @apply text-white;
+}
+
+.no-border-r {
+    border-right-color: transparent;
+}

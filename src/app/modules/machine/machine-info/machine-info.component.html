@@ -1,0 +1,196 @@
+<div class="bg-gray-800
+ text-gray-200 p-6 rounded-lg">
+    <div class="w-100 flex justify-end">
+        <!-- dropdown menu -->
+        <div class="flex justify-center" (clickOutside)="contextMenuCollapsed = true">
+            <div class="relative">
+                <div class="h-10 w-10 rounded-full cursor-pointer" (click)="contextMenuCollapsed = false">
+                    <div class="rounded-full h-10 w-10 flex items-center justify-center hover:bg-indigo-500 hover:text-white">
+                        <i-feather name="more-horizontal"></i-feather>
+                    </div>
+
+                </div>
+                <div *ngIf="!contextMenuCollapsed" class="absolute right-0 w-40 mt-2 py-2 bg-gray-800 rounded shadow-xl" (click)="contextMenuCollapsed = true">
+                    <button *ngIf="machine.provider === 'aws'" (click)="openConfigureMachineDialog(machine)" [disabled]="machine.status !== 'off'" class="transition-colors duration-200 block px-4 py-2 text-normal text-gray-200 rounded hover:bg-indigo-500 hover:text-white w-full text-left">
+            Configure
+          </button>
+                    <button (click)="openConfirmDeletionDialog(machine.id)" [disabled]="machine.status !== 'off'" class="transition-colors duration-200 block px-4 py-2 text-normal text-red-400 rounded hover:bg-red-500 hover:text-white w-full text-left">
+            Delete
+          </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="w-100 flex -mt-4 justify-center">
+        <i-feather name="server" style="height: 64px; width: 64px"></i-feather>
+    </div>
+    <!-- <h3 class="tracking-widest text-center text-indigo-400 text-xs font-medium title-font">CORE</h3> -->
+    <h2 class="
+        text-lg text-center
+        font-semibold
+        text-indigo-400
+        title-font
+        mt-5
+        mb-3
+      ">
+        airgpu-{{ machine.id.slice(2) }}
+    </h2>
+    <div class="mb-5">
+        <table>
+            <tr>
+                <td class="pr-10 pt-5">Location:</td>
+                <td class="pt-5">{{ dataCenterLocations[machine.region] }}</td>
+            </tr>
+            <tr>
+                <td class="pr-10">vCPUs:</td>
+                <td>{{ machine.vcpus ? machine.vcpus : machine.instance_type.endsWith('.xlarge') ? 4 : machine.instance_type.endsWith('.2xlarge') ? 8 : 16 }}
+                </td>
+            </tr>
+            <tr>
+                <td class="pr-10">RAM:</td>
+                <td>{{ machine.ram ? machine.ram : machine.instance_type.endsWith('.xlarge') ? 16 : machine.instance_type.endsWith('.2xlarge') ? 32 : 64 }} GB
+                </td>
+            </tr>
+            <tr>
+                <td class="pr-10">SSD:</td>
+                <td>{{ machine.root_volume_size }} GB</td>
+            </tr>
+            <tr>
+                <td class="pr-10">GPU:</td>
+                <td>{{ machine.gpu_model ? gpuModelNames[machine.gpu_model] : machine.instance_type.startsWith('g4dn') ? 'Nvidia Tesla T4' : machine.instance_type.startsWith('g5') ? 'Nvidia A10G' : 'AMD Radeon Pro V520' }}</td>
+            </tr>
+            <tr>
+                <td class="pr-10 pt-5">Stream:</td>
+                <td class="pt-5">
+                    <span *ngIf="!machine.instance_type.startsWith('g4ad') && machine.max_upload >= 5 && machine.max_upload < 10">720p 60 FPS</span>
+                    <span *ngIf="!machine.instance_type.startsWith('g4ad') && machine.max_upload >= 10 && machine.max_upload < 20">1080p 60 FPS</span>
+                    <span *ngIf="!machine.instance_type.startsWith('g4ad') && machine.max_upload >= 20 && machine.max_upload < 40">1440p 60 FPS</span>
+                    <span *ngIf="!machine.instance_type.startsWith('g4ad') && machine.max_upload >= 40">4K 60 FPS</span>
+                    <span *ngIf="machine.instance_type.startsWith('g4ad') && machine.max_upload < 20">720p 60 FPS</span>
+                    <span *ngIf="machine.instance_type.startsWith('g4ad') && machine.max_upload >= 20">1080p 60 FPS</span>
+                    <span>, {{ machine.max_upload }} Mbit/s</span>
+                </td>
+            </tr>
+            <tr *ngIf="machine.os">
+                <td class="pr-10">OS:</td>
+                <td>
+                    <span *ngIf="machine.os === 'windows-10-byol' || machine.os === 'Windows 10'">Windows 10</span>
+                    <span *ngIf="machine.os === 'windows-server-2019'">Windows Server 2019</span>
+                    <span *ngIf="machine.os === 'windows-server-2022'">Windows Server 2022</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="pr-10 pt-5">IP:</td>
+                <td class="pt-5">{{ machine.public_ip || "-" }}</td>
+            </tr>
+            <tr>
+                <td>Username:</td>
+                <td>{{ machine.provider === 'td' ? 'user' : 'Administrator' }}</td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <span class="font-mono" *ngIf="passwordShown">{{ machine.password }} </span>
+                    <span (click)="toggleShowPassword()" class="text-indigo-300 cursor-pointer hover:text-indigo-400 mr-1">{{
+            passwordShowLabel }}</span>
+                    <span class="mr-1">or</span>
+                    <span class="text-indigo-300 cursor-pointer hover:text-indigo-400" ngxClipboard [cbContent]="machine.password" (cbOnSuccess)="passwordCopied($event)">{{ passwordCopyLabel }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="pr-10 pt-5">Status:</td>
+                <td class="pt-5">
+                    <span class="mr-3">{{ machine.status | statusLabel }}</span>
+                    <span (click)="refresh()">
+            <i-feather name="refresh-cw" class="cursor-pointer text-indigo-300 cursor-pointer hover:text-indigo-400"
+              style="height: 14px; width: 14px"></i-feather>
+          </span>
+                </td>
+            </tr>
+            <tr *ngIf="!machine.os || machine.os.startsWith('windows-server')">
+                <td class="pr-10 pt-5">
+                    <input type="checkbox" id="toggle" [(ngModel)]="useSpareServers" [disabled]="machine.status !== 'off'" (change)="updateCurrentMachinePrice()" />
+                </td>
+                <td class="pt-5">
+                    <p>Use spare server capacity</p><small class="text-xs"><span class="text-green-400">Save {{
+              spareCapacitySavings | number:'1.0-0' }}%</span>, session may be interruped</small>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <button *ngIf="machine.status == 'off' || machine.status == 'backing_up' || machine.status == 'starting' || machine.status == 'initializing'" (click)="startMachine(machine)" class="
+        flex
+        items-center
+        font-medium
+        justify-center
+        mt-auto
+        bg-gradient-to-r
+        from-blue-600
+        to-purple-500
+        hover:bg-gradient-to-r
+        hover:from-blue-700
+        hover:to-purple-600
+        hover:no-underline
+        text-white
+        border-0
+        py-2
+        px-4
+        w-full
+        focus:outline-none
+        rounded
+      " [disabled]="starting">
+    {{ !starting ? "Start" :  machine.status == 'initializing' ? "Initializing" : "Starting"
+    }}<app-spinner class="ml-2 mt-1" *ngIf="starting"></app-spinner>
+  </button>
+    <button *ngIf="machine.status == 'running'" (click)="downloadRdpFile()" class="
+      flex
+      items-center
+      font-medium
+      justify-center
+      mt-auto
+      mb-2
+      bg-gradient-to-r
+      from-blue-600
+      to-purple-500
+      hover:bg-gradient-to-r
+      hover:from-blue-700
+      hover:to-purple-600
+      hover:no-underline
+      text-white
+      border-0
+      py-2
+      px-4
+      w-full
+      focus:outline-none
+      rounded
+    ">
+    Connect with Microsoft Remote Desktop
+</button>
+    <button *ngIf="machine.status == 'running' || machine.status === 'stopping'" (click)="stopMachine(machine)" class="
+        flex
+        items-center
+        font-medium
+        justify-center
+        mt-auto
+        bg-gradient-to-r
+        from-red-600
+        to-pink-700
+        hover:bg-gradient-to-r
+        hover:from-red-700
+        hover:to-pink-800
+        hover:no-underline
+        text-white
+        border-0
+        py-2
+        px-4
+        w-full
+        focus:outline-none
+        rounded
+      " [disabled]="starting || stopping">
+    {{ !stopping ? "Stop" : "Stopping"
+    }}<app-spinner class="ml-2 mt-1" *ngIf="stopping"></app-spinner>
+  </button>
+    <div class="w-100 flex justify-center pt-2" *ngIf="currentMachinePrice">
+        <small>Current price: $ {{ currentMachinePrice | number:'1.2-2' }} / hr</small>
+    </div>
+</div>

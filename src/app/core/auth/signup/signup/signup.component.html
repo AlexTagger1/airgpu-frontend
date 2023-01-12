@@ -1,0 +1,80 @@
+<ng-container *ngIf="!(authCheck$ | async); else loading">
+    <ng-container *ngIf="!success; else successMessage">
+        <div class="flex justify-center items-center">
+            <div class="w-full sm:w-3/4 xl:w-1/2 2xl:w-1/3">
+                <h2 class="text-white">Sign up</h2>
+
+                <form [formGroup]="signupForm" novalidate>
+                    <div class="mb-6">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-300" [class.dark:text-red-500]="email.invalid && (email.dirty || email.touched)">Email</label>
+                        <input type="email" formControlName="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 dark:shadow-sm-light"
+                            [ngClass]="{'bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:bg-red-100 dark:border-red-400 dark:text-red-400': email.invalid && (email.dirty || email.touched)}">
+                        <div *ngIf="email.invalid && (email.dirty || email.touched)">
+                            <p *ngIf="email.errors?.['required']" class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                Email is required.
+                            </p>
+                            <p *ngIf="email.errors?.['email']" class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                Please provide a valid email address.</p>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block mb-2 text-sm font-medium text-gray-300" [class.dark:text-red-500]="password.invalid && (password.dirty || password.touched)">Password</label>
+                        <input type="password" formControlName="password" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500 dark:shadow-sm-light"
+                            [ngClass]="{'bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:bg-red-100 dark:border-red-400 dark:text-red-400': password.invalid && (password.dirty || password.touched)}">
+                        <div *ngIf="password.invalid && (password.dirty || password.touched)">
+                            <p *ngIf="password.errors?.['required']" class="mt-2 text-sm text-red-600 dark:text-red-500">
+                                Password is required.
+                            </p>
+                            <p *ngIf="password.errors?.['minlength']" class="mt-2 text-sm text-red-600 dark:text-red-500">Please enter at least 8 characters.</p>
+                            <p *ngIf="!password.errors?.['minlength'] && password.errors?.['pattern']" class="mt-2 text-sm text-red-600 dark:text-red-500">Please use at least one letter, one number and one special character (@$!%*#?&).</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start mb-6">
+                        <div class="flex items-center h-5">
+                            <input formControlName="marketing_consent" type="checkbox" (change)="toggleMarketingConsent($event)" class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-600 dark:ring-offset-gray-800">
+                        </div>
+                        <label for="marketing-consent" class="ml-2 text-sm font-medium dark:text-gray-300">Keep me
+                            posted about
+                            updates and discounts</label>
+                    </div>
+                    <div class="flex items-start mb-6">
+                        <div class="flex items-center h-5">
+                            <input formControlName="terms" id="terms" type="checkbox" (change)="toggleTerms($event)" class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-indigo-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-indigo-600 dark:ring-offset-gray-800"
+                                [ngClass]="{'bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:bg-red-100 dark:border-red-400 dark:text-red-400': terms.invalid && (terms.dirty || terms.touched)}">
+                        </div>
+                        <label for="terms" class="ml-2 text-sm font-medium dark:text-gray-300" [class.dark:text-red-500]="terms.invalid && (terms.dirty || terms.touched)">I agree to the
+                            <a href="https://airgpu.com/terms" target="_blank"
+                                class="text-indigo-600 hover:underline dark:text-indigo-500">terms and
+                                conditions</a></label>
+                    </div>
+
+                    <ng-hcaptcha formControlName="captcha"></ng-hcaptcha>
+                    <div *ngIf="captcha.invalid && (captcha.dirty || captcha.touched)">
+                        <p *ngIf="captcha.errors?.['required']" class="mt-2 text-sm text-red-600 dark:text-red-500">
+                            Please check the captcha.</p>
+                    </div>
+
+                    <div class="w-100 flex flex-col items-center justify-center mt-12">
+                        <button class="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800" (click)="signup()"
+                            [disabled]="busy">Create
+                            new account<app-spinner class="ml-2 mt-1" *ngIf="busy"></app-spinner></button>
+                        <p *ngIf="error" class="mt-5 text-red-500">Error creating account. Please try again in a bit.
+                        </p>
+                        <p class="mt-5 text-sm">Already have an account? <a routerLink="/machines">Login</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #successMessage>
+        <div class="flex flex-col justify-center items-center mt-20">
+            <p class="text-2xl">Thanks for signing up! You can now <a routerLink="/machines">log in.</a></p>
+            <p class="mt-5">We will redirect you shortly.</p>
+        </div>
+    </ng-template>
+</ng-container>
+<ng-template #loading>
+    <div class="w-full flex justify-center">
+        <app-spinner class="mr-2"></app-spinner>Loading
+    </div>
+</ng-template>

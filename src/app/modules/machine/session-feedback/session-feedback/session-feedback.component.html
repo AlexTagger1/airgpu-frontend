@@ -1,0 +1,11 @@
+<h5 *ngIf="!submitted" class="text-lg -mt-3 mb-2 text-white">Rate your session</h5>
+<h5 *ngIf="submitted" class="text-lg -mt-3 mb-2 text-white">Thank you for your feedback!</h5>
+<div *ngIf="!submitted" (mouseout)="highlight = rating" class="cursor-pointer">
+    <i-feather *ngFor="let i of ratings" (mouseover)="highlight = i" (click)="rating = i" name="star" class="text-indigo-500" [class.fill-indigo]="i <= highlight"></i-feather>
+</div>
+
+<textarea *ngIf="!submitted && rating && rating != 5" class="mt-5 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 bg-gray-800 w-64" rows="4" placeholder="What kind of issues did you experience?" [(ngModel)]="comment"></textarea>
+
+<p>
+    <a *ngIf="!submitted && rating && rating < 4" href="https://help.airgpu.com" target="_blank" class="hover:text-white mt-2">Need help?</a>
+</p>

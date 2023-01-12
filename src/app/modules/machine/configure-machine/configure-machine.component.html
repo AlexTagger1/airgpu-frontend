@@ -1,0 +1,112 @@
+<div>
+    <div class="mb-5 -mt-10">
+        <label class="mb-2">Choose CPU and RAM:</label>
+        <select name="cpu" class="
+            block
+            appearance-none
+            w-full
+            bg-white
+            text-gray-900
+            cursor-pointer
+            border border-gray-400
+            hover:border-gray-500
+            px-4
+            py-2
+            pr-8
+            rounded
+            shadow
+            leading-tight
+            focus:outline-none
+            focus:shadow-outline
+            mt-2
+            mr-2
+            font-semibold
+          " [(ngModel)]="cpu">
+            <option *ngFor="let option of cpuOptions[machineFamily]" [ngValue]="option">
+                {{ option.label }}
+            </option>
+        </select>
+    </div>
+
+    <!-- networking -->
+    <div class="mb-5">
+        <label class="mb-2">Choose streaming quality:</label>
+        <select name="networking" class="
+                block
+                appearance-none
+                w-full
+                bg-white
+                text-gray-900
+                cursor-pointer
+                border border-gray-400
+                hover:border-gray-500
+                px-4
+                py-2
+                pr-8
+                rounded
+                shadow
+                leading-tight
+                focus:outline-none
+                focus:shadow-outline
+                mt-2
+                mr-2
+                font-semibold
+              " [(ngModel)]="networking">
+            <option *ngFor="let option of networkingOptions[machineFamily]" [ngValue]="option">
+                {{ option.label }}
+            </option>
+        </select>
+    </div>
+
+    <!-- storage -->
+    <label class="mb-2">Choose storage:</label>
+    <select name="storage" class="
+                        block
+                        appearance-none
+                        w-full
+                        bg-white
+                        text-gray-900
+                        cursor-pointer
+                        border border-gray-400
+                        hover:border-gray-500
+                        px-4
+                        py-2
+                        pr-8
+                        rounded
+                        shadow
+                        leading-tight
+                        focus:outline-none
+                        focus:shadow-outline
+                        mt-2
+                        mr-2
+                        font-semibold
+                      " [(ngModel)]="storage">
+        <option *ngFor="let option of storageOptions" [ngValue]="option">
+            {{ option.label }}
+        </option>
+    </select>
+    <small>Charged as ${{0.23 * storage.value / 100 }} / day from account credit</small>
+
+    <!-- submit -->
+    <div class="flex items-center justify-center mt-10">
+        <button class="
+                bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded mr-2 font-semibold
+                    " (click)="close()" [disabled]="busy">
+    Cancel
+        </button>
+        <button class="
+            text-white
+            bg-indigo-500
+            border-0
+            py-2
+            px-6
+            focus:outline-none
+            hover:bg-indigo-600
+            rounded
+            font-semibold
+            " (click)="configureMachine()" [disabled]="busy">
+            Submit <app-spinner class="ml-2 mt-1" *ngIf="busy"></app-spinner>
+        </button>
+        <p *ngIf="error" class="ml-3 text-red-500">{{ error }}</p>
+    </div>
+</div>

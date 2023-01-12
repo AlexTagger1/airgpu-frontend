@@ -1,0 +1,10 @@
+<app-header></app-header>
+<div class="flex min-h-screen">
+    <div class="container mt-5 px-5 pt-10 mx-auto">
+        <div class="w-full flex justify-center" *ngIf="loading">
+            <div class="w-4 h-4 border-2 inline-block border-white rounded-full animate-spin no-border-r mr-2"></div>Loading
+        </div>
+        <router-outlet></router-outlet>
+    </div>
+</div>
+<app-footer></app-footer>
